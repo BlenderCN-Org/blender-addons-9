@@ -1,16 +1,3 @@
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTIBILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 bl_info = {
     "name": "Sub Smooth",
     "author": "Neeraj Lagwankar",
@@ -37,13 +24,32 @@ class OBJECT_OT_subsmooth(Operator):
     bl_region_type = "UI"
     bl_options = {"REGISTER", "UNDO"}
 
+    def execute(self, context):
+
+        # These were copied from the log after performing the necessary steps
+        bpy.ops.object.modifier_add(type='SUBSURF')
+        bpy.context.object.modifiers["Subdivision"].render_levels = 4
+        bpy.context.object.modifiers["Subdivision"].levels = 4
+        bpy.ops.object.shade_smooth()
+
+
+        return {"FINISHED"}
+
+def menu_func(self, context):
+    self.layout.operator(OBJECT_OT_subsmooth.bl_idname)
+
 
 def register():
     bpy.utils.register_class(OBJECT_OT_subsmooth)
 
+    # Appending to the Objects menu for execution
+    bpy.types.VIEW3D_MT_object.append(menu_func)
+
 
 def unregister():
     bpy.utils.unregister_class(OBJECT_OT_subsmooth)
+    bpy.types.VIEW3D_MT_object.remove(menu_func)
+
 
 
 if __name__ == "__main__":
